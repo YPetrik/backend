@@ -5,6 +5,5 @@ router.post('/update', DataController.updateData )
 router.get('/:shareCode', DataController.getData )
 router.post('/delete', DataController.deleteData )
 router.post('/clear/:code', DataController.deleteAllData )
-// router.post('/data/push', DataController.croneBased )
 
 module.exports = router

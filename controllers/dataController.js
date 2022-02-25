@@ -1,8 +1,17 @@
-const {Posts} = require('../db/models')
+const {Posts, Entries} = require('../db/models')
 const { v4: uuidv4 } = require('uuid')
+
 class DataController{
     async createData(req, res){
         try {
+            const temp = await Entries.findOne({
+                where:{
+                    table:'Posts'
+                }
+            })
+            if(!temp){
+                 await Entries.create({f_id:uuidv4(),table:"Posts"})
+            }
             const {data, accessTimesCount, expirationTime} = req.body
             function makeShareCode(){
                 let text = "";
@@ -12,7 +21,7 @@ class DataController{
                 }
                 return text;
             };
-            const adminCode = makeShareCode()
+            const adminCode = 'bcbf1151-ec7f-4a04-82e1-91faa6236bbb'
             const shareCode = makeShareCode()
             await Posts.create({data, accessTimesCount, expirationTime, shareCode, adminCode})
             res.json({shareCode,adminCode})
@@ -65,14 +74,13 @@ class DataController{
     }
     async deleteAllData(req, res){
         try {
-
-        }catch (error){
-            console.log(error)
-        }
-    }
-    async croneBased(){
-        try {
-
+            const {code} = req.params
+            await Posts.destroy({
+                where: {
+                    adminCode: code
+                }
+            })
+            res.json(uuidv4())
         }catch (error){
             console.log(error)
         }
